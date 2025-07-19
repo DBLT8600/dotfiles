@@ -1,0 +1,23 @@
+# $ git config -f ~/.gitconfig.local \
+#       includeIf.gitdir:\~/path/to/specific/project-a.path \
+#       ~/.gitconfig.project-a
+# $ git config -f ~/.gitconfig.project-a \
+#       user.name proj-taro
+# $ git config -f ~/.gitconfig.project-a \
+#       user.email taro@proj.com
+# $ git config -f ~/.gitconfig.local \
+#       includeIf.gitdir:\~/path/to/work/\*\*.path \
+#       ~/.gitconfig.work
+
+[init]
+	defaultBranch = main
+[user]
+	name = ﾀﾅｶ ﾄﾓｱｷ
+	email = minazukijiro@gmail.com
+[push]
+	autoSetupRemote = yes
+[include]
+	path = /home/arch/.gitconfig.local
+[status]
+	showUntrackedFiles = no
+	showStash = yes
