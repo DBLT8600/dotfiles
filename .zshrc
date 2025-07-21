@@ -170,7 +170,7 @@ znap source zsh-users/zaw
 znap source sorin-ionescu/prezto modules/command-not-found
 
 if (( $+commands[emacsclient] )); then
-    alias emacs='emacsclient -t'
+    alias emacs='emacsclient -t -a emacs'
 fi
 
 if (( $+commands[gpg] )); then
