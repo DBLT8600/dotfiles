@@ -173,15 +173,19 @@ if (( $+commands[emacsclient] )); then
     alias emacs='emacsclient -t'
 fi
 
-if [[ "${gnupg_SSH_AUTH_SOCK_by:-0}" != $$ ]]; then
-  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+if (( $+commands[gpg] )); then
+    if [[ "${gnupg_SSH_AUTH_SOCK_by:-0}" != $$ ]]; then
+        export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    fi
+
+    export GPG_TTY=$(tty)
+
+    gpg-connect-agent updatestartuptty /bye >/dev/null
 fi
 
-export GPG_TTY=$(tty)
-
-gpg-connect-agent updatestartuptty /bye >/dev/null
-
-alias ssh='ssh-add -l >/dev/null || ssh-add && unalias ssh; ssh'
+if (( $+commands[ssh] && $+SSH_AUTH_SOCK )); then
+    alias ssh='ssh-add -l >/dev/null || ssh-add && unalias ssh; ssh'
+fi
 
 if (( $+commands[nnn] )); then
     export NNN_OPTS=adoRSU
