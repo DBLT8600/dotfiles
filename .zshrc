@@ -120,7 +120,7 @@ precmd_functions+=(reset_broken_terminal)
 
 clear_screen_and_scrollback() { printf '\x1Bc'; zle clear-screen }
 zle -N clear_screen_and_scrollback
-bindkey ^L clear_screen_and_scrollback
+bindkey  clear_screen_and_scrollback
 
 # Useful aliases
 alias relogin='exec $SHELL -l'
