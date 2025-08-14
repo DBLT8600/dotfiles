@@ -7,7 +7,7 @@ if (( ${ZPROF:=0} )); then
     zmodload zsh/zprof; zprof
 fi
 
-if (( $+commands[tmux] && ! $+TMUX && $+SSH_CONNECTION )); then
+if (( $+commands[tmux] && ! $+TMUX && ( $+SSH_CONNECTION || $+TERMUX_VERSION ) )); then
     tmux has -t ssh && exec tmux attach -t ssh
     exec tmux new -s ssh
 fi
@@ -87,23 +87,6 @@ alias dotfiles='git --git-dir $DOTFILES_GIT_DIR --work-tree $DOTFILES_WORK_TREE'
 if [[ ! -d $DOTFILES_GIT_DIR ]]; then
     dotfiles init
 fi
-
-dotfiles-auto-commit() {
-    local a x y f m
-    for a in "${(@)$(dotfiles status -s)}"; do
-        x=${a:0:1} y=${a:1:1} f=${a:3} m=''
-        case "$x$y" in
-            A*) m="add $f" ;;
-            M*|' 'M) m="update $f" ;;
-            D*|' 'D) m="delete $f" ;;
-            C*|' 'C) echo "copy $f" ;;
-            R*|' 'R) echo "rename $f" ;;
-        esac
-        if [[ -n $m ]]; then
-            dotfiles commit -m "$m" "$f"
-        fi
-    done
-}
 
 autoload -Uz compinit
 compinit

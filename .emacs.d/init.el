@@ -16,19 +16,6 @@
   (set-language-environment "Japanese")
   )
 
-(defvar www-get-page-title-user-agent
-  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
-
-(defun www-get-page-title (url)
-  (let ((url-request-method "GET")
-        (url-automatic-caching t)
-        (url-request-extra-headers `(("User-Agent" . ,www-get-page-title-user-agent))))
-    (with-current-buffer (url-retrieve-synchronously url)
-      (let* ((dom (libxml-parse-html-region url-http-end-of-headers (point-max)))
-             (title (dom-text (dom-by-tag dom 'title)))
-             (coding (detect-coding-string title 'utf-8)))
-        (replace-regexp-in-string "\\(\s+\\|\n\\)" "" (decode-coding-string title coding))))))
-
 (add-hook
  'after-save-hook
  (lambda ()
@@ -174,13 +161,27 @@
 
 (leaf org-mode
   :init
-  (let ((org-global-file (concat org-directory "/org-global.el")))
-    (when (file-exists-p org-global-file)
-      (load org-global-file)))
+  (defvar www-get-page-title-user-agent
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
+
+  (defun www-get-page-title (url)
+    (let ((url-request-method "GET")
+          (url-automatic-caching t)
+          (url-request-extra-headers `(("User-Agent" . ,www-get-page-title-user-agent))))
+      (with-current-buffer (url-retrieve-synchronously url)
+        (let* ((dom (libxml-parse-html-region url-http-end-of-headers (point-max)))
+               (title (dom-text (dom-by-tag dom 'title)))
+               (coding (detect-coding-string title 'utf-8)))
+          (replace-regexp-in-string "\\(\s+\\|\n\\)" "" (decode-coding-string title coding))))))
+
+  (defun org-capture--wish-list-with-url ()
+    (let* ((url (read-from-minibuffer "url: "))
+           (title (www-get-page-title url)))
+      url title))
   :custom
   (org-use-speed-commands . t)
   (org-startup-folded . 'content)
-  (org-directory . "~/Sync/org")
+  (org-directory . "~/org")
   (org-agenda-files . `(,org-directory))
   (org-agenda-window-setup . 'current-window)
   (org-todo-keywords . '((sequence "TODO(t)" "WAIT(w)" "|" "DONE(x)" "SOMEDAY(s)")))
@@ -206,6 +207,24 @@
        (org-agenda-start-with-log-mode '(closed))
        (org-agenda-archives-mode t)
        (org-agenda-skip-function '(org-agenda-skip-entry-if 'notregexp "^\\*\\* DONE "))))))
+  (org-capture-templates
+   .
+   `(("T" "todo" entry
+      (file+headline ,(concat org-directory "/tasks.org") "tasks")
+      "** TODO %?\n")
+     ("t" "todo" entry
+      (file+headline ,(concat org-directory "/tasks.org") "tasks")
+      "** TODO %?\nSCHEDULED: %^t\n")
+     ("i" "interrupt" entry
+      (file+headline ,(concat org-directory "/tasks.org") "tasks")
+      "** TODO %?\n" :clock-in t :clock-resume t)
+     ("W" "wish list" checkitem
+      (file+headline ,(concat org-directory "/notes.org") "wish list")
+      "[ ] %?\n")
+     ;; ("w" "wish list with url" checkitem
+     ;;  (file+function ,(concat org-directory "/notes.org") org-capture--wish-list-with-url)
+     ;;  "[ ] [[
+  ))
   :bind (("C-c c" . org-capture)
          ("C-C a" . org-agenda)
          ("C-c o" . (lambda ()
@@ -224,16 +243,16 @@
   (whitespace-action . '(auto-cleanup))
   :global-minor-mode global-whitespace-mode)
 
-(leaf browse-at-remote
-  :ensure t
-  :preface
-  (defun my:copy-url-at-remote ()
-    (interactive)
-    (let ((url (browse-at-remote-get-url)))
-      (kill-new url)
-    (message "URL: %s" url)))
-  :bind (("C-c g g" . my:copy-url-at-remote)
-         ("C-c g o" . browse-at-remote)))
+;; (leaf browse-at-remote
+;;   :ensure t
+;;   :preface
+;;   (defun my:copy-url-at-remote ()
+;;     (interactive)
+;;     (let ((url (browse-at-remote-get-url)))
+;;       (kill-new url)
+;;     (message "URL: %s" url)))
+;;   :bind (("C-c g g" . my:copy-url-at-remote)
+;;          ("C-c g o" . browse-at-remote)))
 
 (leaf company
   :ensure t
