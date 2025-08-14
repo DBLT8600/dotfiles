@@ -7,7 +7,7 @@ if (( ${ZPROF:=0} )); then
     zmodload zsh/zprof; zprof
 fi
 
-if (( $+commands[tmux] && ! $+TMUX && ( $+SSH_CONNECTION || $+TERMUX_VERSION ) )); then
+if (( $+commands[tmux] && ! $+TMUX && $+SSH_CONNECTION|$+TERMUX_VERSION )); then
     tmux has -t ssh && exec tmux attach -t ssh
     exec tmux new -s ssh
 fi
