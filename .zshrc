@@ -7,7 +7,8 @@ if (( ${ZPROF:=0} )); then
     zmodload zsh/zprof; zprof
 fi
 
-if (( $+commands[tmux] && ! $+TMUX && $+SSH_CONNECTION|$+TERMUX_VERSION )); then
+#if (( $+commands[tmux] && ! $+TMUX && $+SSH_CONNECTION|$+TERMUX_VERSION )); then
+if (( $+commands[tmux] && ! $+TMUX && $+SSH_CONNECTION )); then
     tmux has -t ssh && exec tmux attach -t ssh
     exec tmux new -s ssh
 fi
@@ -28,8 +29,6 @@ HISTSIZE=1000
 if [[ $TERM == linux ]]; then
     return 0
 fi
-
-# Completion
 
 # Glob
 setopt EXTENDED_GLOB
@@ -150,10 +149,10 @@ znap source zsh-users/zaw
 # Displays installation information for not found commands.
 # Arch Linux: pkgfile
 # macOS: brew
-znap source sorin-ionescu/prezto modules/command-not-found
+znap source sorin-ionescu/prezto modules/command-not-found modules/completion
 
 if (( $+commands[emacsclient] )); then
-    alias emacs='emacsclient -t'
+    alias emacs='emacsclient -a emacs -qqt'
 fi
 
 if (( $+commands[gpg] )); then
