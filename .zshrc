@@ -71,6 +71,14 @@ bindkey  history-incremental-pattern-search-forward
 bindkey  history-beginning-search-backward
 bindkey  history-beginning-search-forward
 
+# Bracketed Paste Mode
+autoload -Uz bracketed-paste-magic
+zle -N bracketed-paste bracketed-paste-magic
+
+# URL Quote
+autoload -Uz url-quote-magic
+zle -N self-insert url-quote-magic
+
 # Delimiter
 autoload -Uz select-word-style
 select-word-style default
