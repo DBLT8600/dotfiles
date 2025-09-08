@@ -164,15 +164,13 @@ if (( $+commands[emacsclient] )); then
 fi
 
 if (( $+commands[gpg] )); then
+    if [[ "${gnupg_SSH_AUTH_SOCK_by:-0}" != $$ ]]; then
+        export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    fi
+
     export GPG_TTY=$(tty)
 
-    if (( ! $+TERMUX_VERSION )); then
-        if [[ "${gnupg_SSH_AUTH_SOCK_by:-0}" != $$ ]]; then
-            export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-        fi
-
-        gpg-connect-agent updatestartuptty /bye >/dev/null
-    fi
+    gpg-connect-agent updatestartuptty /bye >/dev/null
 fi
 
 if (( $+commands[ssh] && $+SSH_AUTH_SOCK )); then
@@ -180,7 +178,16 @@ if (( $+commands[ssh] && $+SSH_AUTH_SOCK )); then
 fi
 
 if (( $+commands[nnn] )); then
-    export NNN_OPTS=adoRSU
+    export NNN_OPTS=AcdEHoQ
+    
+    typeset -TUx NNN_BMS nnn_bms ';'
+    nnn_bms=(m:/media)
+
+    typeset -TUx NNN_PLUG nnn_plug ';'
+    local getplugs=~/.config/nnn/plugins/getplugs
+    if [[ ! -e $getplugs || ! -s $getplugs ]]; then
+	curl -fsS https://raw.githubusercontent.com/jarun/nnn/refs/heads/master/plugins/getplugs | zsh
+    fi
 fi
 
 if (( $+commands[pass] )); then
