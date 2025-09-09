@@ -1,0 +1,4 @@
+[Default Applications]
+video/MP2T=mpv.desktop
+application/octet-stream=mpv.desktop
+video/mp4=mpv.desktop
