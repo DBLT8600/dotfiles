@@ -178,8 +178,8 @@ if (( $+commands[ssh] && $+SSH_AUTH_SOCK )); then
 fi
 
 if (( $+commands[nnn] )); then
-    export NNN_OPTS=AcdEHoQ
-    
+    export NNN_OPTS=AcdEoQ
+
     typeset -TUx NNN_BMS nnn_bms ';'
     nnn_bms=(m:/media)
 
